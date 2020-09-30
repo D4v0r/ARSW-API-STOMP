@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Cinema bookings</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="/webjars/jquery/jquery.min.js"></script>
+        <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+        <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+        <script src="js/stomp.js"></script>
+
+        <script src="/webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="css/style.css"/>
+
+        
+    </head>
+    <body  onload="app.init()">
+        <div class="flex-container">
+            <br/><br/>
+            <canvas id="myCanvas" width="500" height="400" style="border:1px solid #000000;">
+            Your browser does not support the HTML5 canvas tag.
+            </canvas>
+            <br/><br/>
+                <form class="form-inline" style="width: 400px" >
+                    <label for="row">Seat:</label>
+                    <input type="text" id="row" placeholder="Row" name="seat">
+                    <input type="text" id="col" placeholder="Column" name="seat">
+                    <button type="button" style="border-radius: 12px" class="button" onclick="">Buy</button>
+                </form>
+        
+        
+        
+        </div>
+    </body>
+</html>
