@@ -1,6 +1,13 @@
 var app2 = (function () {
 
-    var seats = [[true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
+    let seats = [
+        [true, true, true, true, true, true, true, true, true, true, true, true],
+        [true, true, true, true, true, true, true, true, true, true, true, true],
+        [true, true, true, true, true, true, true, true, true, true, true, true],
+        [true, true, true, true, true, true, true, true, true, true, true, true],
+        [true, true, true, true, true, true, true, true, true, true, true, true],
+        [true, true, true, true, true, true, true, true, true, true, true, true],
+        [true, true, true, true, true, true, true, true, true, true, true, true]];
 
     class Seat {
         constructor(row, col) {
@@ -57,19 +64,20 @@ var app2 = (function () {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/TOPICXX', function (eventbody) {
-
+            stompClient.subscribe("/topic/buyticket", message => {
+                let {row, col} = JSON.parse(message.body);
+                alert(`row: ${row}, col: ${col}`);
             });
         });
 
     };
 
-    var verifyAvailability = function (row,col) {
+    const verifyAvailability =  (row,col) => {
         if (seats[row][col]){
-            seats[row][col]=false;
+            seats[row][col] = false;
             console.info("purchased ticket");
-        }
-        else{
+            stompClient.send("/topic/buyticket", {}, JSON.stringify(new Seat(row, col)));
+        } else{
             console.info("Ticket not available");
         }  
 
@@ -87,10 +95,10 @@ var app2 = (function () {
         },
 
         buyTicket: function (row, col) {
-            var st = new Seat(row, col);
-            console.info("buying ticket at row: " + row + "col: " + col);
-            verifyAvailability();
-            addPointToCanvas(pt);
+            let st = new Seat(row, col);
+            console.info("buying ticket at row:  " + row + "  col:  " + col);
+            verifyAvailability(row, col);
+            //addPointToCanvas(pt);
 
             //publicar el evento
         },

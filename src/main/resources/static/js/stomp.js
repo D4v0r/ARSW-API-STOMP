@@ -1,7 +1,7 @@
-var app = (function () {
+const app = (function () {
 
-    var seats = [[true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
-    var c,ctx;
+    let seats = [[true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true], [true, true, true, true, true, true, true, true, true, true, true, true]];
+    let c,ctx;
     
     class Seat {
         constructor(row, col) {
@@ -11,21 +11,21 @@ var app = (function () {
     }
     
 
-    var stompClient = null;
+    let stompClient = null;
 
     //get the x, y positions of the mouse click relative to the canvas
-    var getMousePosition = function (evt) {
-        $('#myCanvas').click(function (e) {
-            var rect = canvas.getBoundingClientRect();
-            var x = e.clientX - rect.left;
-            var y = e.clientY - rect.top;
+    const getMousePosition = evt =>  {
+        $('#myCanvas').click(e => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
             console.info(x);
             console.info(y);
         });
   
     };
     
-    var drawSeats = function (cinemaFunction) {
+    const drawSeats = (cinemaFunction) => {
         c = document.getElementById("myCanvas");
         ctx = c.getContext("2d");
         ctx.fillStyle = "#001933";
@@ -33,12 +33,12 @@ var app = (function () {
         ctx.fillStyle = "#FFFFFF";
         ctx.font = "40px Arial";
         ctx.fillText("Screen", 180, 70);
-        var row = 5;
-        var col = 0;
-        for (var i = 0; i < seats.length; i++) {
+        let row = 5;
+        let col = 0;
+        for (let i = 0; i < seats.length; i++) {
             row++;
             col = 0;
-            for (j = 0; j < seats[i].length; j++) {
+            for (let j = 0; j < seats[i].length; j++) {
                 if (seats[i][j]) {
                     ctx.fillStyle = "#009900";
                 } else {
@@ -52,43 +52,41 @@ var app = (function () {
         }
     };
 
-    var connectAndSubscribe = function () {
+    const connectAndSubscribe = () =>  {
         console.info('Connecting to WS...');
-        var socket = new SockJS('/stompendpoint');
+        const socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
 
         //subscribe to /topic/TOPICXX when connections succeed
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({}, frame => {
             console.log('Connected: ' + frame);
-            stompClient.subscribe('/topic/buyticket', function (eventbody) {
-               console.alert("evento recibido");
-               var theObject=JSON.parse(eventbody.body);
+            stompClient.subscribe('/topic/buyticket', eventbody => {
+                console.alert("evento recibido");
+                const theObject = JSON.parse(eventbody.body);
 
             });
         });
 
     };
 
-    var verifyAvailability = function (row,col) {
-        var st = new Seat(row, col);
-        if (seats[row][col]===true){
-            seats[row][col]=false;
+    const verifyAvailability = (row, col) => {
+        const st = new Seat(row, col);
+        if (seats[row][col] === true) {
+            seats[row][col] = false;
             console.info("purchased ticket");
-            stompClient.send("/app/buyticket", {}, JSON.stringify(st)); 
-            
-        }
-        else{
+            stompClient.send("/topic/buyticket", {}, JSON.stringify(st));
+
+        } else {
             console.info("Ticket not available");
-        }  
+        }
 
     };
-
 
 
     return {
 
         init: function () {
-            var can = document.getElementById("canvas");
+            const can = document.getElementById("canvas");
             drawSeats();
             //websocket connection
             connectAndSubscribe();
@@ -97,7 +95,7 @@ var app = (function () {
         buyTicket: function (row, col) {
             console.info("buying ticket at row: " + row + "col: " + col);
             verifyAvailability(row,col);
-            
+
             //buy ticket
         },
 
