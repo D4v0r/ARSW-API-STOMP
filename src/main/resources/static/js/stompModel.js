@@ -1,4 +1,4 @@
-var app2 = (function () {
+let app2 = (() => {
 
     let seats = [
         [true, true, true, true, true, true, true, true, true, true, true, true],
@@ -9,6 +9,17 @@ var app2 = (function () {
         [true, true, true, true, true, true, true, true, true, true, true, true],
         [true, true, true, true, true, true, true, true, true, true, true, true]];
 
+    let positions = [];
+    class rectPosition{
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+    }
+
+    let seatsPositions = undefined;
+
     class Seat {
         constructor(row, col) {
             this.row = row;
@@ -17,32 +28,33 @@ var app2 = (function () {
     }
     
 
-    var stompClient = null;
+    let stompClient = null;
 
 
-    var getMousePosition = function (evt) {
-        canvas = document.getElementById("canvas");
-        var rect = canvas.getBoundingClientRect();
+    let getMousePosition = (evt) => {
+        canvas = document.getElementById("myCanvas");
+        let rect = canvas.getBoundingClientRect();
         return {
             x: evt.clientX - rect.left,
             y: evt.clientY - rect.top
         };
     };
     
-    var drawSeats = function (cinemaFunction) {
-        var c = document.getElementById("myCanvas");
-        var ctx = c.getContext("2d");
+    let drawSeats = (cinemaFunction) => {
+        let c = document.getElementById("myCanvas");
+        let ctx = c.getContext("2d");
         ctx.fillStyle = "#001933";
         ctx.fillRect(100, 20, 300, 80);
         ctx.fillStyle = "#FFFFFF";
         ctx.font = "40px Arial";
         ctx.fillText("Screen", 180, 70);
-        var row = 5;
-        var col = 0;
-        for (var i = 0; i < seats.length; i++) {
+        let row = 5;
+        let col = 0;
+        for (let i = 0; i < seats.length; i++) {
             row++;
             col = 0;
-            for (j = 0; j < seats[i].length; j++) {
+            let positionsRow =[];
+            for (let j = 0; j < seats[i].length; j++) {
                 if (seats[i][j]) {
                     ctx.fillStyle = "#009900";
                 } else {
@@ -50,29 +62,38 @@ var app2 = (function () {
                 }
                 col++;
                 ctx.fillRect(20 * col, 20 * row, 20, 20);
+                positionsRow.push(new rectPosition(20 * col, 20* row));
                 col++;
             }
+            positions.push(positionsRow);
             row++;
         }
     };
 
-    var connectAndSubscribe = function () {
+    let connectAndSubscribe = () => {
         console.info('Connecting to WS...');
-        var socket = new SockJS('/stompendpoint');
+        let socket = new SockJS('/stompendpoint');
         stompClient = Stomp.over(socket);
 
         //subscribe to /topic/TOPICXX when connections succeed
-        stompClient.connect({}, function (frame) {
+        stompClient.connect({},  (frame) => {
             console.log('Connected: ' + frame);
             stompClient.subscribe("/topic/buyticket", message => {
-                let {row, col} = JSON.parse(message.body);
-                alert(`row: ${row}, col: ${col}`);
+                changeSeatColor(message);
             });
         });
-
     };
 
+    const changeSeatColor = (message) => {
+        const {row, col} = JSON.parse(message.body);
+        seats[row][col] =  false;
+        drawSeats();
+    };
     const verifyAvailability =  (row,col) => {
+        if(row === -1){
+            console.info("This is not a seat");
+            return;
+        }
         if (seats[row][col]){
             seats[row][col] = false;
             console.info("purchased ticket");
@@ -83,27 +104,40 @@ var app2 = (function () {
 
     };
 
+    const calculateSeatPosition = ({x, y}) =>{
+        for(let i = 0; i < positions.length; i ++){
+            for(let j = 0; j < positions[i].length; j++){
+                const rect = positions[i][j];
+                if(rect.x <= x  && x <= rect.x + 20 &&  rect.y  <= y && y <= rect.y + 20){
+                    return {
+                        row: i,
+                        col: j,
+                    }
+                }
+            }
+        }
+        return {row: -1, col: -1}
+    };
 
+    const buyTicketAction = (event) => {
+        const {row, col} = calculateSeatPosition(getMousePosition(event));
+        verifyAvailability(row, col);
+    };
 
     return {
 
-        init: function () {
-            var can = document.getElementById("canvas");
+        init: () => {
             drawSeats();
             //websocket connection
             connectAndSubscribe();
         },
 
-        buyTicket: function (row, col) {
-            let st = new Seat(row, col);
-            console.info("buying ticket at row:  " + row + "  col:  " + col);
-            verifyAvailability(row, col);
-            //addPointToCanvas(pt);
-
-            //publicar el evento
+        buyTicket: () => {
+            const canvas = document.getElementById("myCanvas");
+            canvas.addEventListener("click", event => buyTicketAction(event));
         },
 
-        disconnect: function () {
+        disconnect: () => {
             if (stompClient !== null) {
                 stompClient.disconnect();
             }
@@ -111,5 +145,4 @@ var app2 = (function () {
             console.log("Disconnected");
         }
     };
-
 })();
