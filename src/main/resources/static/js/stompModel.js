@@ -1,5 +1,5 @@
 let app2 = (() => {
-
+    let dynamicTopic = null;
     let seats = [
         [true, true, true, true, true, true, true, true, true, true, true, true],
         [true, true, true, true, true, true, true, true, true, true, true, true],
@@ -78,7 +78,7 @@ let app2 = (() => {
         //subscribe to /topic/TOPICXX when connections succeed
         stompClient.connect({},  (frame) => {
             console.log('Connected: ' + frame);
-            stompClient.subscribe("/topic/buyticket", message => {
+            stompClient.subscribe("/topic/buyticket."+dynamicTopic, message => {
                 changeSeatColor(message);
             });
         });
@@ -97,13 +97,12 @@ let app2 = (() => {
         if (seats[row][col]){
             seats[row][col] = false;
             console.info("purchased ticket");
-            stompClient.send("/topic/buyticket", {}, JSON.stringify(new Seat(row, col)));
+            stompClient.send("/topic/buyticket."+dynamicTopic, {}, JSON.stringify(new Seat(row, col)));
         } else{
             console.info("Ticket not available");
         }  
 
     };
-
     const calculateSeatPosition = ({x, y}) =>{
         for(let i = 0; i < positions.length; i ++){
             for(let j = 0; j < positions[i].length; j++){
@@ -118,10 +117,13 @@ let app2 = (() => {
         }
         return {row: -1, col: -1}
     };
-
     const buyTicketAction = (event) => {
         const {row, col} = calculateSeatPosition(getMousePosition(event));
         verifyAvailability(row, col);
+    };
+    const setTopic = (cinema, date, movie) =>{
+        dynamicTopic = cinema + "." + date +"." + movie;
+
     };
 
     return {
@@ -129,6 +131,11 @@ let app2 = (() => {
         init: () => {
             drawSeats();
             //websocket connection
+        },
+
+        connect:(cinema, date, movie) =>{
+            drawSeats();
+            setTopic(cinema, date, movie);
             connectAndSubscribe();
         },
 

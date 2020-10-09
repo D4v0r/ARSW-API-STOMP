@@ -13,21 +13,31 @@ and open the template in the editor.
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <script src="js/stompModel.js"></script>
-
-        <script src="/webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css" />
         <link rel="stylesheet" href="css/style.css"/>
+        <script src="/webjars/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <link rel="stylesheet"
+              href="/webjars/bootstrap/4.5.2/css/bootstrap.min.css"/>
 
         
     </head>
     <body  onload="app2.init()">
         <div class="flex-container">
+            <br/><br/><br/>
+            <form class="form-inline" style="width: 400px" >
+                <label for="cinemaName">Cinema:</label>
+                <input type="text" id="cinemaName" placeholder="Name" name="cinema">
+                <label for="date">Fecha:</label>
+                <input type="date" id="date" placeholder="Date" name="date">
+                <label for="movie">Película:</label>
+                <input type="text" id="movie" placeholder="Name" name="movie">
+                <button type="button" style="border-radius: 12px" class="button" onclick="app2.connect($('#cinemaName').val(), $('#date').val(), $('#movie').val())">Connect</button>
+            </form>
             <br/><br/>
             <canvas id="myCanvas" width="500" height="400" style="border:1px solid #000000;">
             Your browser does not support the HTML5 canvas tag.
             </canvas>
             <br/><br/>
-            <button type="button" style="border-radius: 12px" class="button" onclick="app2.buyTicket()">Buy</button>
+            <button type="button" style="border-radius: 12px" class="btn btn-primary" onclick="app2.buyTicket()">Buy</button>
         </div>
     </body>
 </html>
