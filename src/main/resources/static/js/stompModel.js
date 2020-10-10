@@ -100,7 +100,7 @@ let app2 = (() => {
             stompClient.send("/topic/buyticket."+dynamicTopic, {}, JSON.stringify(new Seat(row, col)));
         } else{
             console.info("Ticket not available");
-        }  
+        }
 
     };
     const calculateSeatPosition = ({x, y}) =>{
