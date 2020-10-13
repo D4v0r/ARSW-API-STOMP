@@ -57,15 +57,17 @@ public class InMemoryCinemaPersistence implements CinemaPersitence{
     public void buyTicket(int row, int col, String cinema, String date, String movieName) throws CinemaException{
 
         List<CinemaFunction> cinemaFunctions =cinemas.get(cinema).getFunctions();
-        Optional<CinemaFunction> cf = cinemaFunctions.stream().filter(cinemaFunction -> {
-            return cinemaFunction.getMovie().getName().equals(movieName) && cinemaFunction.getDate().equals(date);
-        }).findFirst();
-        if(cf.isPresent()){
-            CinemaFunction cinemaFunction = cf.get();
-            cinemaFunction.buyTicket(row, col);
-            System.out.println("Compra exitosa, para la funcion: "+cinemaFunction.getMovie().getName()+" con horario: "+cinemaFunction.getDate());
-        }else{
-            throw new CinemaException(CinemaPersistenceException.NO_FOUND_CINEMA_FUNCTION);
+        synchronized (cinemaFunctions) {
+            Optional<CinemaFunction> cf = cinemaFunctions.stream().filter(cinemaFunction -> {
+                return cinemaFunction.getMovie().getName().equals(movieName) && cinemaFunction.getDate().startsWith(date);
+            }).findFirst();
+            if (cf.isPresent()) {
+                CinemaFunction cinemaFunction = cf.get();
+                cinemaFunction.buyTicket(row, col);
+                System.out.println("Compra exitosa, para la funcion: " + cinemaFunction.getMovie().getName() + " con horario: " + cinemaFunction.getDate());
+            } else {
+                throw new CinemaException(CinemaPersistenceException.NO_FOUND_CINEMA_FUNCTION);
+            }
         }
     }
 

@@ -36,7 +36,7 @@ public class CinemaFunction {
         this.date=date;
         for (int i=0;i<7;i++){
             List<Boolean> row= new ArrayList<>(Arrays.asList(new Boolean[12]));
-            Collections.fill(row, Boolean.FALSE);
+            Collections.fill(row, Boolean.TRUE);
             this.seats.add(row);
         }
     }

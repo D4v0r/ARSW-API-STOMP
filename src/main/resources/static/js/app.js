@@ -78,7 +78,7 @@ app = ( () => {
             </canvas>
         <h3 id="chairs"></h3>
         <div class="form-inline">
-                    <button type="button" style="border-radius: 12px" class="button" onclick="">Buy</button>
+                    <button type="button" style="border-radius: 12px" class="button" onclick="app.buyTicket()">Buy</button>
          </div>
       `);
     };
@@ -111,7 +111,8 @@ app = ( () => {
                 </form>
         `);
     };
-    const drawSeats = seatsCinema =>{
+    const drawSeats = () =>{
+        let seatsCinema = cinemaFunction.seats;
         let freeChairs = 0;
         const cellSize = 30;
         let canvas = document.getElementById("myCanvas");
@@ -136,10 +137,11 @@ app = ( () => {
                 if(i === 6){
                     ctx.strokeText( j + 1, x + 11, y + 50);
                 }
+                //console.log(seatsCinema);
                 if(seatsCinema[i][j]){
                     ctx.fillRect( x, y, cellSize, cellSize);
-                } else{
                     freeChairs += 1;
+                } else{
                     ctx.clearRect(x, y, cellSize, cellSize);
                 }
                 ctx.strokeRect( x, y, cellSize, cellSize);
@@ -155,7 +157,6 @@ app = ( () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.beginPath();
     };
-
     const getMousePosition = (evt) => {
         const canvas = document.getElementById("myCanvas");
         let rect = canvas.getBoundingClientRect();
@@ -164,7 +165,6 @@ app = ( () => {
             y: evt.clientY - rect.top
         };
     };
-
     const connectAndSubscribe = () => {
         console.info('Connecting to WS...');
         let socket = new SockJS('/stompendpoint');
@@ -178,7 +178,6 @@ app = ( () => {
             });
         });
     };
-
     const changeSeatColor = (message) => {
         const {row, col} = JSON.parse(message.body);
         seats[row][col] =  false;
@@ -249,7 +248,7 @@ app = ( () => {
                             cinemaFunction = fun;
                             this.disconnect();
                             clearCanvas();
-                            drawSeats(cinemaFunction.seats);
+                            drawSeats();
                             seats =  cinemaFunction.seats;
                             this.connect(cinemaName, date, fun.movie.name);
                             break;

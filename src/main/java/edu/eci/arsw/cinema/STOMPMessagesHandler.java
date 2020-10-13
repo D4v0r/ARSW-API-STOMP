@@ -20,6 +20,7 @@ public class STOMPMessagesHandler {
     @MessageMapping("/buyticket.{cinemaName}.{functionDate}.{movieName}")
     public void handleBuyEvent(Seat st, @DestinationVariable String cinemaName, @DestinationVariable String functionDate, @DestinationVariable String movieName) throws Exception {
         System.out.println("Nuevo asiento recibido en el servidor!:"+st);
+        cinemaServices.buyTicket(st.getRow(), st.getCol(), cinemaName, functionDate, movieName);
         messagingTemplate.convertAndSend("/topic/buyticket."+cinemaName+"."+functionDate+"."+movieName, st);
     }
 }
