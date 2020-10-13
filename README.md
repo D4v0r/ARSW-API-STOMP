@@ -17,7 +17,7 @@ En este caso, el manejador de mensajes asociado a "/app" aún no está configura
 
 ## Diagrama de Actividades
 
-![](https://media.discordapp.net/attachments/740467446867296298/765400820446920704/Activity_Diagram0.png?width=779&height=597)
+![](https://cdn.discordapp.com/attachments/740467446867296298/765404707492724756/Activity_Diagram0.png)
 
 
 ## Comenzando
